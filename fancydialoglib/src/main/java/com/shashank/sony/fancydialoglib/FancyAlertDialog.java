@@ -5,8 +5,13 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,7 +63,7 @@ public class FancyAlertDialog {
         private FancyAlertDialogListener pListener, nListener;
         private int pBtnColor, nBtnColor, bgColor;
         private boolean cancel;
-        private boolean onButton;
+        private boolean onButton=false;
 
         public Builder(Activity activity) {
             this.activity = activity;
@@ -136,8 +141,8 @@ public class FancyAlertDialog {
 
         public FancyAlertDialog build() {
             TextView message1, title1;
-            ImageView iconImg;
-            Button nBtn, pBtn;
+            final ImageView iconImg;
+            final Button nBtn, pBtn;
             View view;
             final Dialog dialog;
             if (animation == Animation.POP)
@@ -209,18 +214,60 @@ public class FancyAlertDialog {
                     }
                 });
             }
+            nBtn.setVisibility(View.INVISIBLE);
+            pBtn.setVisibility(View.INVISIBLE);
             if (onButton) {
                 nBtn.setVisibility(View.GONE);
                 LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 p.weight = 100;
+                p.setMargins(40, 20, 40, 20);
                 pBtn.setLayoutParams(p);
             }
-
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    iconImg.animate().rotation(iconImg.getRotation() - 360).start();
+                }
+            }, 500);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    unHideViewPump(pBtn, 250);
+                }
+            }, 500);
+            if (!onButton) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        unHideViewPump(nBtn, 250);
+                    }
+                }, 650);
+            }
             dialog.show();
 
             return new FancyAlertDialog(this);
 
         }
+    }
+
+    public static void unHideViewPump(final View v, int millis) {
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0 , 1 ) ;
+        alphaAnimation.setDuration(millis);
+        alphaAnimation.setFillAfter(true);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(.1f , 1f ,
+                .1f , 1f , ScaleAnimation.RELATIVE_TO_SELF , .5f ,
+                ScaleAnimation.RELATIVE_TO_SELF , .5f) ;
+        scaleAnimation.setFillAfter(true);
+        scaleAnimation.setDuration(millis);
+        scaleAnimation.setInterpolator( new OvershootInterpolator());
+
+        AnimationSet set = new AnimationSet(true) ;
+        set.addAnimation(scaleAnimation);
+        set.addAnimation(alphaAnimation);
+        v.startAnimation(scaleAnimation);
+        v.setVisibility(View.VISIBLE);
     }
 
 }

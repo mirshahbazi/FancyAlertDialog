@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setMessage("Do you really want to Exit ?")
                 .setNegativeBtnText("Cancel")
                 .setPositiveBtnText("Rate")
-                .isOneButton(true)
+                .isOneButton(false)
                 .setAnimation(Animation.POP)
                 .isCancellable(true)
                 .setIcon(R.drawable.ic_star_border_black_24dp,Icon.Visible)
