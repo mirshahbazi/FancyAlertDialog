@@ -236,14 +236,14 @@ public class FancyAlertDialog {
                     unHideViewPump(pBtn, 250);
                 }
             }, 500);
-            if (!onButton) {
+//            if (!onButton) {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         unHideViewPump(nBtn, 250);
                     }
                 }, 650);
-            }
+//            }
             dialog.show();
 
             return new FancyAlertDialog(this);
